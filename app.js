@@ -9,7 +9,6 @@ import https from "https";
 import { v4 as uuidv4 } from "uuid";
 //import admin from 'firebase-admin';
 
-
 // Custom HTTP and HTTPS Agents
 const httpAgent = new http.Agent({
   keepAlive: true,
@@ -32,10 +31,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://giomessaging.onrender.com",
-    ],
+    origin: ["http://localhost:3000", "https://giomessaging.onrender.com"],
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -45,8 +41,8 @@ app.use(bodyParser.json());
 
 // WhatsApp API Credentials
 const ACCESS_TOKEN =
-  "EAAQYaGPHZBD0BOy9b3acDU6ywehiKJarISySO1XUSITOQwNgUeFqnBjuKtjPfPLJNxdsGlN08DCehUwpZCvQZCjQp9G63XeKWiZC86iYemL5E8Rb9hozG46ZBgQZBGHtSBZBUGXmvkZCZA5TZBPlCfheoeYYz5VvpDfyHbEjqvtAA9MXzi43n1lQB9lrF2ymUPCHyfHAZDZD"; //"EAAXxaUQfr3gBO5XDpAF6ZCFo1GIjruy4YgqiJMElgpaawXMCrXWBpSHGiB1aSf2hmkSzJhJLG3N14Uan8Axghepb2ftoMBcOkaKv9aOs5j8BUQZASbhrM95qFn6dPeYawQZAi2sFzdW6uJRW2HSL8CteNsAbYn3783HuuVeFAPfk7ETE1ZATvRSWZBpDS6UDyBQZDZD";
-//const PHONE_NUMBER_ID = 
+  "EAASWbEEJXEABO8D5YkwGN5WeAoVw2n04oWrTomQfeM7cdmNrxopRxcPNw4KrXZAKAvUnLBgFn8B5QxQZA1qzLQlTLJFrYiPHldaaMOrX9vukoycc08cyXd8EZAwZB0sxjVzj388mpSyrPKkgymIQf5dewdgyugrNh9neWX3c0nZCjUpMZBtAHjXsKEgN5wnKjIdwZDZD"; //"EAAXxaUQfr3gBO5XDpAF6ZCFo1GIjruy4YgqiJMElgpaawXMCrXWBpSHGiB1aSf2hmkSzJhJLG3N14Uan8Axghepb2ftoMBcOkaKv9aOs5j8BUQZASbhrM95qFn6dPeYawQZAi2sFzdW6uJRW2HSL8CteNsAbYn3783HuuVeFAPfk7ETE1ZATvRSWZBpDS6UDyBQZDZD";
+//const PHONE_NUMBER_ID =
 const VERSION = "v22.0";
 
 // Global in-memory store for user contexts
@@ -58,8 +54,6 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`, req.body);
   next();
 });
-
-
 
 //// From here - readable modular functions.
 
@@ -107,9 +101,12 @@ const handleMobileMoneySelection = async (buttonId, phone, phoneNumberId) => {
   await sendWhatsAppMessage(phone, redirectPayload, phoneNumberId);
 };
 
-
-
-const handleOrder = async (message, changes, displayPhoneNumber, phoneNumberId) => {
+const handleOrder = async (
+  message,
+  changes,
+  displayPhoneNumber,
+  phoneNumberId
+) => {
   const order = message.order;
   const orderId = message.id;
   const customerInfo = {
@@ -133,7 +130,6 @@ const handleOrder = async (message, changes, displayPhoneNumber, phoneNumberId) 
   userContexts.set(customerInfo.phone, userContext);
 
   try {
-
     await sendOrderPrompt(customerInfo.phone, phoneNumberId);
 
     console.log("Order saved successfully.");
@@ -141,9 +137,6 @@ const handleOrder = async (message, changes, displayPhoneNumber, phoneNumberId) 
     console.error("Error saving order:", error.message);
   }
 };
-
-
-
 
 const handleTextMessages = async (message, phone, phoneNumberId) => {
   const messageText = message.text.body.trim().toLowerCase();
@@ -168,27 +161,36 @@ const handleTextMessages = async (message, phone, phoneNumberId) => {
     case "products":
       console.log("User requested the menu.");
       // Provide an array of categories available.
-      const categories = ["elitra-plus-series", "weather-proof-of", "group-sockets", "accessory", "automation-group", "mechanical-group", "cable-trunking", "lighting-group"];
+      const categories = [
+        "elitra-plus-series",
+        "weather-proof-of",
+        "group-sockets",
+        "accessory",
+        "automation-group",
+        "mechanical-group",
+        "cable-trunking",
+        "lighting-group",
+      ];
       await sendCategoryList(phone, phoneNumberId, categories);
       break;
-    case "gio":
+    case "Lumora-scents":
       console.log("User requested the menu.");
       // Provide an array of categories available.
       //const categories = ["elitra-plus-series", "weather-proof-of", "group-sockets", "accessory", "automation-group", "mechanical-group", "cable-trunking", "lighting-group"];
       await sendCategoryList(phone, phoneNumberId, categories);
       break;
 
-
+    case "Buy":
+      console.log("User requested the menu.");
+      // Provide an array of categories available.
+      //const categories = ["elitra-plus-series", "weather-proof-of", "group-sockets", "accessory", "automation-group", "mechanical-group", "cable-trunking", "lighting-group"];
+      await sendCategoryList(phone, phoneNumberId, categories);
+      break;
 
     default:
       console.log(`Received unrecognized message: ${messageText}`);
   }
 };
-
-
-
-
-
 
 const handleLocation = async (location, phone, phoneNumberId) => {
   try {
@@ -197,12 +199,16 @@ const handleLocation = async (location, phone, phoneNumberId) => {
 
     if (!userContext || !userContext.order) {
       console.log("No order found in user context.");
-      await sendWhatsAppMessage(phone, {
-        type: "text",
-        text: {
-          body: "No active order found. Please place an order first.",
+      await sendWhatsAppMessage(
+        phone,
+        {
+          type: "text",
+          text: {
+            body: "No active order found. Please place an order first.",
+          },
         },
-      }, phoneNumberId);
+        phoneNumberId
+      );
       return;
     }
 
@@ -272,28 +278,27 @@ const handleLocation = async (location, phone, phoneNumberId) => {
       deliveryLocation: {
         latitude: location.latitude,
         longitude: location.longitude,
-      }
+      },
     };
 
     // Save directly to Firebase
-    const docRef = await firestore.collection("whatsappOrdersGio").add(orderData);
+    const docRef = await firestore
+      .collection("whatsappOrdersGio")
+      .add(orderData);
     console.log("Order saved successfully to Firebase with ID:", docRef.id);
 
-
-
-
-
-
-    await sendWhatsAppMessage(phone, {
-      type: "text",
-      text: {
-        body: "Please provide your TIN(e.g., 101589140) or 0 if no TIN:",
+    await sendWhatsAppMessage(
+      phone,
+      {
+        type: "text",
+        text: {
+          body: "Please provide your TIN(e.g., 101589140) or 0 if no TIN:",
+        },
       },
-    }, phoneNumberId);
+      phoneNumberId
+    );
 
     userContext.stage = "EXPECTING_TIN";
-
-
 
     // Update user context to expect TIN input
     userContext.docReference = docRef;
@@ -305,20 +310,20 @@ const handleLocation = async (location, phone, phoneNumberId) => {
     console.log("Location updated and order saved successfully.");
   } catch (error) {
     console.error("Error processing location and saving order:", error.message);
-    await sendWhatsAppMessage(phone, {
-      type: "text",
-      text: {
-        body: `Sorry, there was an error processing your location: ${error.message}. Please try again.`,
+    await sendWhatsAppMessage(
+      phone,
+      {
+        type: "text",
+        text: {
+          body: `Sorry, there was an error processing your location: ${error.message}. Please try again.`,
+        },
       },
-    }, phoneNumberId);
+      phoneNumberId
+    );
   }
 };
 
-
-
 const processedMessages = new Set();
-
-
 
 // Webhook endpoint for receiving messages
 app.post("/webhook", async (req, res) => {
@@ -343,7 +348,6 @@ app.post("/webhook", async (req, res) => {
 
     processedMessages.add(uniqueMessageId);
 
-
     try {
       if (phoneNumberId === "541671652366663") {
         await handlePhoneNumber2Logic(message, phone, changes, phoneNumberId);
@@ -359,10 +363,6 @@ app.post("/webhook", async (req, res) => {
 
   res.sendStatus(200);
 });
-
-
-
-
 
 async function handlePhoneNumber2Logic(message, phone, changes, phoneNumberId) {
   switch (message.type) {
@@ -385,145 +385,184 @@ async function handlePhoneNumber2Logic(message, phone, changes, phoneNumberId) {
           console.log(`User ${phone} provided TIN: ${tin}`);
           // Store the TIN or process it as required
           // Update the context to expect the location
-          userContext.tin = tin;  // Save the TIN
+          userContext.tin = tin; // Save the TIN
           userContext.stage = "EXPECTING_MTN_AIRTEL"; // Move to location stage
           userContexts.set(phone, userContext);
           const docReferenc = userContext.docReference;
           // Later, when you want to update the same document
           await docReferenc.update({
-            TIN: userContext.tin  // Replace 'userProvidedTIN' with the actual TIN value you receive from the customer
-
+            TIN: userContext.tin, // Replace 'userProvidedTIN' with the actual TIN value you receive from the customer
           });
 
           // Call the order confirmation endpoint
           try {
             // Get the orderId from the document reference
-      const orderDoc = await docReferenc.get();
-      const orderData = orderDoc.data();
-      
-            await axios.post(`https://giomessaging.onrender.com/api/send-order-confirmation`, {
-              orderId: orderData.orderId
-            });
-            console.log("Order confirmation endpoint triggered for order:", orderData.orderId);
+            const orderDoc = await docReferenc.get();
+            const orderData = orderDoc.data();
+
+            await axios.post(
+              `https://giomessaging.onrender.com/api/send-order-confirmation`,
+              {
+                orderId: orderData.orderId,
+              }
+            );
+            console.log(
+              "Order confirmation endpoint triggered for order:",
+              orderData.orderId
+            );
           } catch (error) {
-            console.error("Error triggering order confirmation endpoint:", error);
+            console.error(
+              "Error triggering order confirmation endpoint:",
+              error
+            );
             // Don't throw the error as we don't want to affect the main order flow
           }
 
-          await sendWhatsAppMessage(phone, {
-            type: "interactive",
-            interactive: {
-              type: "button",
-              body: {
-                text: "Proceed to payment",
-              },
-              action: {
-                buttons: [
-                  { type: "reply", reply: { id: "mtn_momo", title: "MTN MoMo" } },
-                  // {
-                  //   type: "reply",
-                  //   reply: { id: "airtel_mobile_money", title: "Airtel Money" },
-                  // },
-                ],
+          await sendWhatsAppMessage(
+            phone,
+            {
+              type: "interactive",
+              interactive: {
+                type: "button",
+                body: {
+                  text: "Proceed to payment",
+                },
+                action: {
+                  buttons: [
+                    {
+                      type: "reply",
+                      reply: { id: "mtn_momo", title: "MTN MoMo" },
+                    },
+                    // {
+                    //   type: "reply",
+                    //   reply: { id: "airtel_mobile_money", title: "Airtel Money" },
+                    // },
+                  ],
+                },
               },
             },
-          }, phoneNumberId);
+            phoneNumberId
+          );
 
-          return;  // Exit early after processing TIN
+          return; // Exit early after processing TIN
         } else {
-          await sendWhatsAppMessage(phone, {
-            type: "text",
-            text: {
-              body: "Invalid TIN. Please provide a valid TIN.",
+          await sendWhatsAppMessage(
+            phone,
+            {
+              type: "text",
+              text: {
+                body: "Invalid TIN. Please provide a valid TIN.",
+              },
             },
-          }, phoneNumberId);
+            phoneNumberId
+          );
           return;
         }
       }
       break;
 
-      case "interactive":
-        if (message.interactive.type === "button_reply") {
-          const buttonId = message.interactive.button_reply.id;
-      
-          // Handle order confirmation/cancellation buttons
-          if (buttonId.startsWith('confirm_') || buttonId.startsWith('cancel_')) {
-            const orderId = buttonId.split('_')[1];
-      
-            // Find the order in Firestore
-            const orderSnapshot = await firestore.collection("whatsappOrdersGio")
-              .where("orderId", "==", orderId)
-              .get();
-      
-            if (!orderSnapshot.empty) {
-              const docRef = orderSnapshot.docs[0].ref;
-              const orderData = orderSnapshot.docs[0].data();
-              const customerPhone = orderData.phone; // Get customer's phone number
-      
-              if (buttonId.startsWith('confirm_')) {
-                await docRef.update({
-                  paid: true
-                });
-                await sendWhatsAppMessage(customerPhone, {
+    case "interactive":
+      if (message.interactive.type === "button_reply") {
+        const buttonId = message.interactive.button_reply.id;
+
+        // Handle order confirmation/cancellation buttons
+        if (buttonId.startsWith("confirm_") || buttonId.startsWith("cancel_")) {
+          const orderId = buttonId.split("_")[1];
+
+          // Find the order in Firestore
+          const orderSnapshot = await firestore
+            .collection("whatsappOrdersGio")
+            .where("orderId", "==", orderId)
+            .get();
+
+          if (!orderSnapshot.empty) {
+            const docRef = orderSnapshot.docs[0].ref;
+            const orderData = orderSnapshot.docs[0].data();
+            const customerPhone = orderData.phone; // Get customer's phone number
+
+            if (buttonId.startsWith("confirm_")) {
+              await docRef.update({
+                paid: true,
+              });
+              await sendWhatsAppMessage(
+                customerPhone,
+                {
                   type: "text",
                   text: {
-                    body: `*Thank you*\nWe received your payment successfully! Your order is being processed and will be delivered soon`
-                  }
-                }, phoneNumberId);
-              } else if (buttonId.startsWith('cancel_')) {
-                await docRef.update({
-                  rejected: true
-                });
-                await sendWhatsAppMessage(customerPhone, {
+                    body: `*Thank you*\nWe received your payment successfully! Your order is being processed and will be delivered soon`,
+                  },
+                },
+                phoneNumberId
+              );
+            } else if (buttonId.startsWith("cancel_")) {
+              await docRef.update({
+                rejected: true,
+              });
+              await sendWhatsAppMessage(
+                customerPhone,
+                {
                   type: "text",
                   text: {
-                    body: `*Oops*\nOrder cancelled. Please contact us on +250788640995`
-                  }
-                }, phoneNumberId);
-              }
+                    body: `*Oops*\nOrder cancelled. Please contact us on +250788640995`,
+                  },
+                },
+                phoneNumberId
+              );
             }
-            return;
           }
-          
-          // Move CHECKOUT and MORE handlers outside the previous if block
-          else if (buttonId === 'CHECKOUT') {
-            // Send location request message
-            const locationRequestPayload = {
-              type: "interactive",
-              interactive: {
-                type: "location_request_message",
-                body: {
-                  text: "Share your delivery location",
-                },
-                action: {
-                  name: "send_location",
-                },
-              },
-            };
-      
-            await sendWhatsAppMessage(phone, locationRequestPayload, phoneNumberId);
-            return;
-          } 
-          else if (buttonId === 'MORE') {
-            const categories = ["elitra-plus-series", "weather-proof-of", "group-sockets", "accessory", "automation-group", "mechanical-group", "cable-trunking", "lighting-group"];
-            await sendCategoryList(phone, phoneNumberId, categories);
-            return;
-          }
-      
-          // Handle MTN/Airtel selection
-          const userContext = userContexts.get(phone) || {};
-          if (userContext.stage === "EXPECTING_MTN_AIRTEL") {
-            await handleMobileMoneySelection(buttonId, phone, phoneNumberId);
-            console.log("Expecting MTN & AIRTEL button reply");
-            return;
-          }
-        } 
-        else if (message.interactive.type === "list_reply") {
-          const selectedCategory = message.interactive.list_reply.id;
-          console.log("User selected category:", selectedCategory);
-          await sendCatalogForCategory(phone, phoneNumberId, selectedCategory);
+          return;
         }
-        break;
+
+        // Move CHECKOUT and MORE handlers outside the previous if block
+        else if (buttonId === "CHECKOUT") {
+          // Send location request message
+          const locationRequestPayload = {
+            type: "interactive",
+            interactive: {
+              type: "location_request_message",
+              body: {
+                text: "Share your delivery location",
+              },
+              action: {
+                name: "send_location",
+              },
+            },
+          };
+
+          await sendWhatsAppMessage(
+            phone,
+            locationRequestPayload,
+            phoneNumberId
+          );
+          return;
+        } else if (buttonId === "MORE") {
+          const categories = [
+            "elitra-plus-series",
+            "weather-proof-of",
+            "group-sockets",
+            "accessory",
+            "automation-group",
+            "mechanical-group",
+            "cable-trunking",
+            "lighting-group",
+          ];
+          await sendCategoryList(phone, phoneNumberId, categories);
+          return;
+        }
+
+        // Handle MTN/Airtel selection
+        const userContext = userContexts.get(phone) || {};
+        if (userContext.stage === "EXPECTING_MTN_AIRTEL") {
+          await handleMobileMoneySelection(buttonId, phone, phoneNumberId);
+          console.log("Expecting MTN & AIRTEL button reply");
+          return;
+        }
+      } else if (message.interactive.type === "list_reply") {
+        const selectedCategory = message.interactive.list_reply.id;
+        console.log("User selected category:", selectedCategory);
+        await sendCatalogForCategory(phone, phoneNumberId, selectedCategory);
+      }
+      break;
 
     // case "interactive":
     //   if (message.interactive.type === "button_reply") {
@@ -581,7 +620,6 @@ async function handlePhoneNumber2Logic(message, phone, changes, phoneNumberId) {
 
     //           await sendWhatsAppMessage(customerInfo.phone, locationRequestPayload, phoneNumberId);
 
-
     //         } else if (buttonId === 'MORE') {
     //           const categories = ["elitra-plus-series", "weather-proof-of", "group-sockets", "accessory", "automation-group", "mechanical-group", "cable-trunking", "lighting-group"];
     //           await sendCategoryList(phone, phoneNumberId, categories);
@@ -605,11 +643,7 @@ async function handlePhoneNumber2Logic(message, phone, changes, phoneNumberId) {
     //     await sendCatalogForCategory(phone, phoneNumberId, selectedCategory);
     //   }
 
-
-
-
     //   break;
-
 
     case "location":
       await handleLocation(message.location, phone, phoneNumberId);
@@ -619,14 +653,6 @@ async function handlePhoneNumber2Logic(message, phone, changes, phoneNumberId) {
       console.log("Unrecognized message type:", message.type);
   }
 }
-
-
-
-
-
-
-
-
 
 // Webhook verification
 app.get("/webhook", (req, res) => {
@@ -693,11 +719,13 @@ async function sendWhatsAppMessage(phone, messagePayload, phoneNumberId) {
         recipient_type: "individual",
         to: formatPhoneNumber(phone),
         ...messagePayload,
-
       },
     });
 
-    console.log(`Message sent successfully from ${phoneNumberId}:`, response.data);
+    console.log(
+      `Message sent successfully from ${phoneNumberId}:`,
+      response.data
+    );
     return response.data;
   } catch (error) {
     console.error(
@@ -708,12 +736,12 @@ async function sendWhatsAppMessage(phone, messagePayload, phoneNumberId) {
   }
 }
 
-
 function capitalizeCategory(category) {
   // Split by hyphen and capitalize each word
-  return category.split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return category
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**
@@ -725,7 +753,7 @@ async function sendCategoryList(phone, phoneNumberId, categories) {
     const url = `https://graph.facebook.com/${VERSION}/${phoneNumberId}/messages`;
 
     // Build list items from categories; each row's id is the category name.
-    const rows = categories.map(cat => ({
+    const rows = categories.map((cat) => ({
       id: cat, // use the category name (or ID) as the row id
       title: capitalizeCategory(cat),
       //description: `See our ${cat} products`
@@ -739,24 +767,24 @@ async function sendCategoryList(phone, phoneNumberId, categories) {
         type: "list",
         header: {
           type: "text",
-          text: "Welcome to Lumora Scents App!"
+          text: "Welcome to Lumora Scents App!",
         },
         body: {
-          text: "Please choose a category to view products:"
+          text: "Please choose a category to view products:",
         },
         footer: {
-          text: "Powered by Lumora Scents "
+          text: "Powered by Lumora Scents ",
         },
         action: {
           button: "Select Category",
           sections: [
             {
               title: "Categories",
-              rows: rows
-            }
-          ]
-        }
-      }
+              rows: rows,
+            },
+          ],
+        },
+      },
     };
 
     const response = await axios({
@@ -764,15 +792,18 @@ async function sendCategoryList(phone, phoneNumberId, categories) {
       url: url,
       headers: {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      data: payload
+      data: payload,
     });
 
     console.log("Category list sent successfully to:", phone);
     return response.data;
   } catch (error) {
-    console.error("Error sending category list:", error.response?.data || error.message);
+    console.error(
+      "Error sending category list:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
@@ -781,7 +812,12 @@ async function sendCategoryList(phone, phoneNumberId, categories) {
  * Sends a catalog message for a single chunk of up to 30 products.
  * The catalog message uses interactive type "product_list".
  */
-async function sendCatalogChunk(phone, phoneNumberId, category, productRetailerIdsChunk) {
+async function sendCatalogChunk(
+  phone,
+  phoneNumberId,
+  category,
+  productRetailerIdsChunk
+) {
   try {
     const url = `https://graph.facebook.com/${VERSION}/${phoneNumberId}/messages`;
 
@@ -793,7 +829,7 @@ async function sendCatalogChunk(phone, phoneNumberId, category, productRetailerI
         type: "product_list",
         header: {
           type: "text",
-          text: category  // Display the category as the header
+          text: category, // Display the category as the header
         },
         body: { text: "Here are our products:" },
         action: {
@@ -801,13 +837,13 @@ async function sendCatalogChunk(phone, phoneNumberId, category, productRetailerI
           sections: [
             {
               title: category,
-              product_items: productRetailerIdsChunk.map(id => ({
-                product_retailer_id: id
-              }))
-            }
-          ]
-        }
-      }
+              product_items: productRetailerIdsChunk.map((id) => ({
+                product_retailer_id: id,
+              })),
+            },
+          ],
+        },
+      },
     };
 
     const response = await axios({
@@ -815,15 +851,18 @@ async function sendCatalogChunk(phone, phoneNumberId, category, productRetailerI
       url: url,
       headers: {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      data: payload
+      data: payload,
     });
 
     console.log(`Catalog chunk sent successfully for category ${category}`);
     return response.data;
   } catch (error) {
-    console.error("Error sending catalog chunk:", error.response?.data || error.message);
+    console.error(
+      "Error sending catalog chunk:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
@@ -846,7 +885,8 @@ function chunkArray(array, chunkSize) {
  */
 async function fetchProductRetailerIDs(category) {
   try {
-    const snapshot = await firestore.collection("gioproducts")
+    const snapshot = await firestore
+      .collection("gioproducts")
       .where("category", "==", category)
       .get();
     if (snapshot.empty) {
@@ -854,9 +894,13 @@ async function fetchProductRetailerIDs(category) {
       return [];
     }
     // Use the document id as product retailer id.
-    return snapshot.docs.map(doc => doc.id);
+    return snapshot.docs.map((doc) => doc.id);
   } catch (error) {
-    console.error("Error fetching products for category:", category, error.message);
+    console.error(
+      "Error fetching products for category:",
+      category,
+      error.message
+    );
     return [];
   }
 }
@@ -874,10 +918,9 @@ async function sendCatalogForCategory(phone, phoneNumberId, category) {
   for (const chunk of chunks) {
     await sendCatalogChunk(phone, phoneNumberId, category, chunk);
     // Optional delay to avoid rate limits
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 }
-
 
 // new catalog with sections
 async function sendDefaultCatalog(phone, phoneNumberId) {
@@ -891,8 +934,8 @@ async function sendDefaultCatalog(phone, phoneNumberId) {
       interactive: {
         type: "product_list",
         header: {
-          type: "text",  // The header type should be "image" to support both image and text
-          text: "Lumora Scents "  // You can include text along with the image
+          type: "text", // The header type should be "image" to support both image and text
+          text: "Lumora Scents ", // You can include text along with the image
         },
         body: { text: "Order & get fast delivery!" },
         action: {
@@ -901,14 +944,11 @@ async function sendDefaultCatalog(phone, phoneNumberId) {
             {
               title: "Our Products",
               product_items: [
-
                 { product_retailer_id: "mg2q530x13" },
                 { product_retailer_id: "t1q2ty3kr4" },
                 { product_retailer_id: "4qr3qyirk5" },
                 { product_retailer_id: "3iqefj5eax" },
                 { product_retailer_id: "pgjcz51oim" },
-
-
               ],
             },
           ],
@@ -937,9 +977,6 @@ async function sendDefaultCatalog(phone, phoneNumberId) {
   }
 }
 
-
-
-
 // Route to manually trigger a message
 app.post("/api/send-message", async (req, res) => {
   try {
@@ -964,7 +1001,6 @@ app.post("/api/send-message", async (req, res) => {
     });
   }
 });
-
 
 app.post("/api/save-order", async (req, res) => {
   console.log("Incoming order data:", req.body);
@@ -1008,12 +1044,8 @@ app.post("/api/save-order", async (req, res) => {
 
     let currentOrder = 0;
 
-
-
     function orderNumber() {
-
-
-      const randomNum = uuidv4().split('-')[0];
+      const randomNum = uuidv4().split("-")[0];
       currentOrder += 1;
       const now = new Date();
       const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
@@ -1045,11 +1077,13 @@ app.post("/api/save-order", async (req, res) => {
       accepted: false,
       vendor: vendorNumber,
       tin: userContext.tin,
-      deliveryLocation: deliveryLocation || null // Add location data
+      deliveryLocation: deliveryLocation || null, // Add location data
     };
 
     // Save order to Firestore
-    const docRef = await firestore.collection("whatsappOrdersGio").add(orderData);
+    const docRef = await firestore
+      .collection("whatsappOrdersGio")
+      .add(orderData);
 
     console.log("Order saved successfully with ID:", docRef.id);
 
@@ -1063,7 +1097,6 @@ app.post("/api/save-order", async (req, res) => {
       .json({ message: "An error occurred while saving the order" });
   }
 });
-
 
 async function fetchFacebookCatalogProducts() {
   const url = `https://graph.facebook.com/v12.0/2071018050036168/products?fields=id,name,description,price,image_url,retailer_id`;
@@ -1102,14 +1135,16 @@ async function sendOrderPrompt(phone, phoneNumberId) {
     type: "interactive",
     interactive: {
       type: "button",
-      body: { text: `*Your order’s looking good!*\nWant to add anything else before checkout?` },
+      body: {
+        text: `*Your order’s looking good!*\nWant to add anything else before checkout?`,
+      },
       action: {
         buttons: [
           { type: "reply", reply: { id: "MORE", title: "More" } },
-          { type: "reply", reply: { id: "CHECKOUT", title: "Checkout" } }
-        ]
-      }
-    }
+          { type: "reply", reply: { id: "CHECKOUT", title: "Checkout" } },
+        ],
+      },
+    },
   };
 
   await sendWhatsAppMessage(phone, payload, phoneNumberId);
@@ -1121,14 +1156,15 @@ async function sendOrderPrompt(phone, phoneNumberId) {
 app.post("/api/send-order-confirmation", async (req, res) => {
   try {
     const { orderId } = req.body;
-    const ADMIN_PHONE = "250790649423";// "250788640995"; // Hardcoded admin phone number
+    const ADMIN_PHONE = "250790649423"; // "250788640995"; // Hardcoded admin phone number
 
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
 
     // Fetch order details from Firestore
-    const orderSnapshot = await firestore.collection("whatsappOrdersGio")
+    const orderSnapshot = await firestore
+      .collection("whatsappOrdersGio")
       .where("orderId", "==", orderId)
       .get();
 
@@ -1140,9 +1176,14 @@ app.post("/api/send-order-confirmation", async (req, res) => {
     const docRef = orderSnapshot.docs[0].ref;
 
     // Format order details for the message
-    const orderDetails = orderData.products.map(product =>
-      `${product.product_name} x${product.quantity} - ${product.price * product.quantity} ${product.currency}`
-    ).join('\n');
+    const orderDetails = orderData.products
+      .map(
+        (product) =>
+          `${product.product_name} x${product.quantity} - ${
+            product.price * product.quantity
+          } ${product.currency}`
+      )
+      .join("\n");
 
     const messageBody = `New Order Received!\n\nOrder ID: ${orderData.orderId}\nCustomer Phone: ${orderData.phone}\nTotal Amount: ${orderData.amount} ${orderData.currency}\n\nItems:\n${orderDetails}\n\nPlease confirm or cancel this order.`;
 
@@ -1152,7 +1193,7 @@ app.post("/api/send-order-confirmation", async (req, res) => {
       interactive: {
         type: "button",
         body: {
-          text: messageBody
+          text: messageBody,
         },
         action: {
           buttons: [
@@ -1160,37 +1201,42 @@ app.post("/api/send-order-confirmation", async (req, res) => {
               type: "reply",
               reply: {
                 id: `confirm_${orderId}`,
-                title: "Confirm"
-              }
+                title: "Confirm",
+              },
             },
             {
               type: "reply",
               reply: {
                 id: `cancel_${orderId}`,
-                title: "Cancel"
-              }
-            }
-          ]
-        }
-      }
+                title: "Cancel",
+              },
+            },
+          ],
+        },
+      },
     };
 
     // Send message to admin instead of customer
     await sendWhatsAppMessage(ADMIN_PHONE, messagePayload, "541671652366663");
 
-    res.status(200).json({ message: "Order confirmation message sent successfully to admin" });
+    res
+      .status(200)
+      .json({
+        message: "Order confirmation message sent successfully to admin",
+      });
   } catch (error) {
     console.error("Error sending order confirmation:", error);
-    res.status(500).json({ message: "Failed to send order confirmation message" });
+    res
+      .status(500)
+      .json({ message: "Failed to send order confirmation message" });
   }
 });
-
 
 // Add this new endpoint for sending order confirmation message
 app.post("/api/send-order-confirmation", async (req, res) => {
   try {
     const { orderId } = req.body;
-    
+
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
@@ -1203,7 +1249,9 @@ app.post("/api/send-order-confirmation", async (req, res) => {
       .get();
 
     if (adminPhoneSnapshot.empty) {
-      return res.status(400).json({ message: "No active admin phone number found" });
+      return res
+        .status(400)
+        .json({ message: "No active admin phone number found" });
     }
 
     const ADMIN_PHONE = adminPhoneSnapshot.docs[0].data().number;
@@ -1220,7 +1268,7 @@ app.post("/api/send-order-confirmation", async (req, res) => {
 
     const orderData = orderSnapshot.docs[0].data();
     const docRef = orderSnapshot.docs[0].ref;
-    
+
     const orderDetails = orderData.products
       .map(
         (product) =>
@@ -1253,17 +1301,16 @@ app.post("/api/send-order-confirmation", async (req, res) => {
     };
 
     await sendWhatsAppMessage(ADMIN_PHONE, messagePayload, "541671652366663");
-    
+
     res.status(200).json({
       message: "Order confirmation message sent successfully to admin",
-      adminPhone: ADMIN_PHONE // Optional: return the phone number used
+      adminPhone: ADMIN_PHONE, // Optional: return the phone number used
     });
-    
   } catch (error) {
     console.error("Error sending order confirmation:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Failed to send order confirmation message",
-      error: error.message 
+      error: error.message,
     });
   }
 });
